@@ -1,0 +1,14 @@
+{
+  "name": "tropy-archive",
+  "version": "1.0.0",
+  "description": "Export items to an archive.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "hooks": {
+    "export": true
+  },
+  "author": "",
+  "license": "ISC"
+}
