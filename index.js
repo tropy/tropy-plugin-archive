@@ -46,10 +46,26 @@ class Plugin {
     })
   }
 
-  writeJson() {
+  substitutePaths(data) {
+    data = data.slice()
+    for (let items of data) {
+      for (let item of items['@graph']) {
+        const photos = item[TROPY.PHOTO][0]['@list']
+        for (let photo of photos) {
+          photo[TROPY.PATH][0]['@value'] = this.destination(photo, '.')
+        }
+      }
+    }
+    return data
+  }
+
+  async writeJson() {
+    const data = this.substitutePaths(this.expanded)
+    // const jsonld = await this.jsonld.compact(data, this.data['@context'])
+
     return this.writeFile(
       join(this.dir, 'items.jsonld'),
-      JSON.stringify(this.data, null, 2))
+      JSON.stringify(data, null, 2))
   }
 
   source(photo) {
@@ -60,9 +76,9 @@ class Plugin {
     return crypto.createHash('sha256').update(str).digest('hex')
   }
 
-  destination(photo) {
+  destination(photo, dir = this.dir) {
     const src = this.source(photo)
-    return join(this.dir, 'images', this.hash(src)) + extname(src)
+    return join(dir, 'images', this.hash(src)) + extname(src)
   }
 
   *writeItem(item) {
