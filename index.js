@@ -4,6 +4,7 @@ const fs = require('fs')
 const crypto = require('crypto')
 const { join, extname } = require('path')
 const { tmpdir } = require('os')
+const archive = require('./src/archive')
 
 const TROPY = {
   NS: 'https://tropy.org/v1/tropy#',
@@ -33,12 +34,12 @@ class Plugin {
   copyFile(source, target) {
     var rd = fs.createReadStream(source)
     var wr = fs.createWriteStream(target)
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       rd.on('error', reject)
       wr.on('error', reject)
       wr.on('finish', resolve)
       rd.pipe(wr)
-    }).catch(function(error) {
+    }).catch(error => {
       rd.destroy()
       wr.end()
       throw error
@@ -69,7 +70,6 @@ class Plugin {
     for (let photo of photos) {
       const src = this.source(photo)
       const dst = this.destination(photo)
-      this.logger.info(src, dst)
       yield this.copyFile(src, dst)
     }
   }
@@ -95,6 +95,10 @@ class Plugin {
 
       await this.Promise.all(this.writeItems())
       await this.writeJson()
+
+      const result = await archive(this.dir, this.config.output)
+      this.logger.info(
+        `tropy-archive wrote ${result.bytes} bytes to ${this.config.output}`)
 
     } catch (e) {
       logger.error(e.message)

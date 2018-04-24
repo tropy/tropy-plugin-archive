@@ -11,4 +11,7 @@
   },
   "author": "",
   "license": "ISC"
+  "dependencies": {
+    "archiver": "^2.1.1"
+  }
 }
