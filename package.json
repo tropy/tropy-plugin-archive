@@ -1,13 +1,14 @@
 {
   "name": "tropy-archive",
-  "version": "1.0.0",
-  "description": "Export items to an archive.",
+  "version": "0.1.0",
+  "description": "Export metadata and photos into a zip archive.",
   "main": "index.js",
   "hooks": {
     "export": true
   },
-  "author": "",
-  "license": "ISC",
+  "repository": "https://github.com/tropy/tropy-archive",
+  "author": "Tropy",
+  "license": "AGPL-3.0",
   "options": [
     {
       "field": "output",
