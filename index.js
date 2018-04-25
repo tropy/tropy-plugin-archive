@@ -50,9 +50,8 @@ class Plugin {
     data = data.slice()
     for (let items of data) {
       for (let item of items['@graph']) {
-        const photos = item[TROPY.PHOTO][0]['@list']
-        for (let photo of photos) {
-          photo[TROPY.PATH][0]['@value'] = this.destination(photo, '.')
+        for (let photo of item.photo) {
+          photo.path = this.destination(photo.path, '.')
         }
       }
     }
@@ -60,24 +59,22 @@ class Plugin {
   }
 
   async writeJson() {
-    const data = this.substitutePaths(this.expanded)
-    // const jsonld = await this.jsonld.compact(data, this.data['@context'])
+    const data = this.substitutePaths(this.data)
 
     return this.writeFile(
       join(this.dir, 'items.jsonld'),
       JSON.stringify(data, null, 2))
   }
 
-  source(photo) {
-    return photo[TROPY.PATH][0]['@value']
-  }
-
   hash(str) {
     return crypto.createHash('sha256').update(str).digest('hex')
   }
 
-  destination(photo, dir = this.dir) {
-    const src = this.source(photo)
+  source(photo) {
+    return photo[TROPY.PATH][0]['@value']
+  }
+
+  destination(src, dir = this.dir) {
     return join(dir, 'images', this.hash(src)) + extname(src)
   }
 
@@ -85,7 +82,7 @@ class Plugin {
     const photos = item[TROPY.PHOTO][0]['@list']
     for (let photo of photos) {
       const src = this.source(photo)
-      const dst = this.destination(photo)
+      const dst = this.destination(src)
       yield this.copyFile(src, dst)
     }
   }
