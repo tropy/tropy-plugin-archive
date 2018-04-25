@@ -27,6 +27,7 @@ class Plugin {
     jsonld = jsonld.slice()
     for (let items of jsonld) {
       for (let item of items['@graph']) {
+        if (!item.photo) continue
         for (let photo of item.photo) {
           photo.path = this.destination(photo.path, '.')
         }
@@ -52,7 +53,7 @@ class Plugin {
   }
 
   *writeItem(item) {
-    const photos = item[TROPY.PHOTO][0]['@list']
+    const photos = item[TROPY.PHOTO] ? item[TROPY.PHOTO][0]['@list'] : []
     for (let photo of photos) {
       const src = this.source(photo)
       const dst = this.destination(src)
