@@ -25,6 +25,7 @@ class Plugin {
     const { promisify, Promise } = require('bluebird')
     this.Promise = Promise
     this.mkdir = promisify(fs.mkdir)
+    this.rm = promisify(require('rimraf'))
     this.mkdtemp = promisify(fs.mkdtemp)
     this.writeFile = promisify(fs.writeFile)
     this.jsonld = require('jsonld').promises
@@ -112,6 +113,7 @@ class Plugin {
       const result = await archive(this.dir, this.config.output)
       this.logger.info(
         `tropy-archive wrote ${result.bytes} bytes to ${this.config.output}`)
+      await this.rm(this.dir)
 
     } catch (e) {
       logger.error(e.message)
