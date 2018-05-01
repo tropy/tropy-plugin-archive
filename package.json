@@ -2,9 +2,13 @@
   "name": "tropy-archive",
   "version": "0.1.0",
   "description": "Export metadata and photos into a zip archive.",
-  "main": "index.js",
+  "main": "bundle.js",
   "hooks": {
     "export": true
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -w -c"
   },
   "repository": "https://github.com/tropy/tropy-archive",
   "author": "Tropy",
@@ -19,5 +23,11 @@
   ],
   "dependencies": {
     "archiver": "^2.1.1"
+  },
+  "devDependencies": {
+    "rollup": "^0.58.2",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-replace": "^2.0.0"
   }
 }
