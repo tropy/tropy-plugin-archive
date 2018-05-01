@@ -17,7 +17,6 @@ module.exports = {
     'crypto',
     'events',
     'fs',
-    'glob',
     'os',
     'path',
     'stream',
@@ -26,11 +25,18 @@ module.exports = {
     'zlib'
   ],
   plugins: [
+    // replace `readable-stream` package dependency with node built-in `stream`
     replace({
       ['readable-stream']: "require('stream')",
       ['readable-stream/passthrough']: "require('stream').PassThrough",
       ['readable-stream/duplex']: "require('stream').Duplex",
       delimiters: ['require(\'', '\')']
+    }),
+    // circumvent circular dependency by removing globSync
+    replace({
+      ['./sync.js']: '{}',
+      delimiters: ['require(\'', '\')'],
+      include: 'node_modules/glob/glob.js'
     }),
     resolve(),
     common()
