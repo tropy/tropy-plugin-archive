@@ -81,8 +81,7 @@ class Plugin {
       this.dir = await this.mkdtemp(join(tmpdir(), PLUGIN.NAME))
       await this.mkdir(join(this.dir, PLUGIN.IMAGES_DIR))
 
-      await Promise.all(this.writeItems())
-      await this.writeJson()
+      await Promise.all([...this.writeItems(), this.writeJson()])
 
       const result = await archive(this.dir, output)
       logger.info(`${PLUGIN.NAME} wrote ${result.bytes} bytes to ${output}`)
