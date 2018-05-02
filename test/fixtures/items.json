@@ -1,0 +1,81 @@
+[
+  {
+    "@context": {
+      "@version": 1.1,
+      "@vocab": "https://tropy.org/v1/tropy#",
+      "template": {
+        "@id": "https://tropy.org/v1/tropy#template",
+        "@type": "@id"
+      },
+      "photo": {
+        "@id": "https://tropy.org/v1/tropy#photo",
+        "@container": "@list",
+        "@context": {
+          "note": {
+            "@container": "@list",
+            "@id": "https://tropy.org/v1/tropy#note"
+          },
+          "selection": {
+            "@id": "https://tropy.org/v1/tropy#selection",
+            "@container": "@list",
+            "@context": {}
+          },
+          "title": {
+            "@id": "http://purl.org/dc/elements/1.1/title",
+            "@type": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "date": {
+            "@id": "http://purl.org/dc/elements/1.1/date",
+            "@type": "https://tropy.org/v1/tropy#date"
+          }
+        }
+      },
+      "title": {
+        "@id": "http://purl.org/dc/elements/1.1/title",
+        "@type": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    },
+    "@graph": [
+      {
+        "@type": "Item",
+        "title": "1482247832",
+        "photo": [
+          {
+            "@type": "Photo",
+            "date": "2018-03-29T20:18:50.809Z",
+            "title": "Test Image",
+            "angle": 0,
+            "brightness": 0,
+            "checksum": "7bdb628939e97229348b24b0102ec299",
+            "contrast": 0,
+            "height": 636,
+            "hue": 0,
+            "mimetype": "image/jpeg",
+            "mirror": false,
+            "negative": false,
+            "note": [
+              {
+                "@type": "Note",
+                "html": {
+                  "@language": "en",
+                  "@value": "<p>hello</p>"
+                },
+                "text": {
+                  "@language": "en",
+                  "@value": "hello"
+                }
+              }
+            ],
+            "orientation": 1,
+            "path": "./fixtures/items.json",
+            "saturation": 0,
+            "size": 95964,
+            "width": 800
+          }
+        ],
+        "tag": "favourites"
+      }
+    ],
+    "template": "https://tropy.org/v1/templates/generic"
+  }
+]
