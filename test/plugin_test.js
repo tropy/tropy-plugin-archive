@@ -11,18 +11,18 @@ const context = {
   require
 }
 
+const output = resolve(__dirname, 'output.zip')
+
 describe('Plugin', () => {
-  const Plugin = require('../src/plugin')
 
   var data = require('./fixtures/items.json')
   data[0]['@graph'][0]['photo'][0]['path'] =
     resolve(__dirname, 'fixtures', 'items.json')
 
-  it('with `config.output`', async () => {
-    const config = {
-      output: resolve(__dirname, 'output.zip')
-    }
-    const plugin = new Plugin(config, context)
+  it('smoke test', async () => {
+    const Plugin = require('../src/plugin')
+
+    const plugin = new Plugin({ output }, context)
     expect(await plugin.export(data)).to.be.undefined
   })
 })
