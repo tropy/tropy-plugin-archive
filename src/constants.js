@@ -8,7 +8,8 @@ const TROPY = {
 const PLUGIN = {
   NAME: 'tropy-archive',
   IMAGES_DIR: 'images',
-  ITEMS_FILE: 'items.jsonld'
+  ITEMS_FILE: 'items.jsonld',
+  ARCHIVES: 'Zip Archives'
 }
 
 module.exports = {

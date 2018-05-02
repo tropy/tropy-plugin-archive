@@ -21,6 +21,12 @@ class Plugin {
     this.mkdtemp = promisify(fs.mkdtemp)
     this.writeFile = promisify(fs.writeFile)
     this.jsonld = require('jsonld').promises
+    this.dialog = () => require('../dialog').save({
+      filters: [{
+        name: PLUGIN.ARCHIVES,
+        extensions: ['zip']
+      }]
+    })
   }
 
   substitutePaths(jsonld) {
@@ -71,7 +77,7 @@ class Plugin {
 
   async export(data) {
     const { logger } = this.context
-    const { output } = this.config
+    const output = this.config.output || await this.dialog()
 
     try {
       this.data = data
