@@ -21,3 +21,8 @@ In the plugin preferences, the `Output` parameter needs to specify under which f
 ## Development
 
 Besides using libraries shipped with Tropy, this plugin includes an external dependency (node-archiver), and bundles it with `rollup`. To make a bundle build, run `npm run build` or `npm run watch` for continuous builds.
+
+## Testing
+
+`npm run test` will run a basic smoke test in the electron renderer.
+
