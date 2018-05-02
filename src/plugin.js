@@ -78,6 +78,7 @@ class Plugin {
   async export(data) {
     const { logger } = this.context
     const output = this.config.output || await this.dialog()
+    if (!output) return
 
     try {
       this.data = data
