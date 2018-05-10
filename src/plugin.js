@@ -59,7 +59,7 @@ class Plugin {
     return join(dir, PLUGIN.IMAGES_DIR, hash(src)) + extname(src)
   }
 
-  *writeItem(item) {
+  *getPhotoPath(item) {
     const photos = item[TROPY.PHOTO] ? item[TROPY.PHOTO][0]['@list'] : []
     for (let photo of photos) {
       const src = this.source(photo)
@@ -68,10 +68,10 @@ class Plugin {
     }
   }
 
-  *writeItems() {
+  *getPhotoPaths() {
     for (let items of this.expanded) {
       for (let item of items['@graph']) {
-        yield* this.writeItem(item)
+        yield* this.getPhotoPath(item)
       }
     }
   }
@@ -91,7 +91,7 @@ class Plugin {
 
       await this.Promise.all([
         this.Promise.map(
-          this.writeItems(),
+          this.getPhotoPaths(),
           ({ src, dst }) => copyFile(src, dst),
           { concurrency: 64 }
         ),
