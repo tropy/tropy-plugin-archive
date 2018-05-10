@@ -15,7 +15,8 @@ class Plugin {
     this.logger = context.logger
 
     const { require } = this.context
-    const { promisify } = require('bluebird')
+    const { Promise, promisify } = require('bluebird')
+    this.Promise = Promise
     this.mkdir = promisify(fs.mkdir)
     this.rm = promisify(require('rimraf'))
     this.mkdtemp = promisify(fs.mkdtemp)
@@ -63,7 +64,7 @@ class Plugin {
     for (let photo of photos) {
       const src = this.source(photo)
       const dst = this.destination(src)
-      yield copyFile(src, dst)
+      yield { src, dst }
     }
   }
 
@@ -88,7 +89,14 @@ class Plugin {
       this.dir = await this.mkdtemp(join(tmpdir(), PLUGIN.NAME))
       await this.mkdir(join(this.dir, PLUGIN.IMAGES_DIR))
 
-      await Promise.all([...this.writeItems(), this.writeJson()])
+      await this.Promise.all([
+        this.Promise.map(
+          this.writeItems(),
+          ({ src, dst }) => copyFile(src, dst),
+          { concurrency: 64 }
+        ),
+        this.writeJson()
+      ])
 
       const result = await archive(this.dir, output)
       logger.info(`${PLUGIN.NAME} wrote ${result.bytes} bytes to ${output}`)
