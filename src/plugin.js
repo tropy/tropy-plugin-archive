@@ -93,7 +93,7 @@ class Plugin {
         this.Promise.map(
           this.getPhotoPaths(),
           ({ src, dst }) => copyFile(src, dst),
-          { concurrency: 64 }
+          { concurrency: this.config.concurrency || PLUGIN.COPY_PROCESSES }
         ),
         this.writeJson()
       ])
