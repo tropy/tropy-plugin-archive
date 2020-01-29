@@ -3,9 +3,9 @@
 const fs = require('fs')
 const { join, extname } = require('path')
 const { tmpdir } = require('os')
-const archive = require('./archive')
-const { copyFile, hash } = require('./utils')
-const { TROPY, PLUGIN } = require('./constants')
+const zip = require('cross-zip')
+const { copyFile, hash } = require('./src/utils')
+const { TROPY, PLUGIN } = require('./src/constants')
 
 
 class Plugin {
@@ -98,7 +98,7 @@ class Plugin {
         this.writeJson()
       ])
 
-      const result = await archive(this.dir, output)
+      const result = await zip.zipSync(this.dir, output)
       logger.info(`${PLUGIN.NAME} wrote ${result.bytes} bytes to ${output}`)
 
       await this.rm(this.dir)
