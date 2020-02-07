@@ -1,10 +1,11 @@
 'use strict'
 
 const fs = require('fs')
+const fsPromises = fs.promises
 const { join, extname } = require('path')
 const { tmpdir } = require('os')
 const zip = require('cross-zip')
-const { copyFile, hash } = require('./utils')
+const { hash } = require('./utils')
 const { TROPY, PLUGIN } = require('./constants')
 
 
@@ -15,13 +16,9 @@ class Plugin {
     this.logger = context.logger
 
     const { require } = this.context
-    const { Promise, promisify } = require('bluebird')
+    const { Promise } = require('bluebird')
     this.Promise = Promise
-    this.mkdir = promisify(fs.mkdir)
-    this.rm = promisify(require('rimraf'))
-    this.mkdtemp = promisify(fs.mkdtemp)
-    this.writeFile = promisify(fs.writeFile)
-    this.jsonld = require('jsonld').promises
+    this.jsonld = require('jsonld')
     this.dialog = () => require('../dialog').save({
       filters: [{
         name: PLUGIN.ARCHIVES,
@@ -46,7 +43,7 @@ class Plugin {
   async writeJson() {
     const data = this.substitutePaths(this.data)
 
-    return this.writeFile(
+    return fsPromises.writeFile(
       join(this.dir, PLUGIN.ITEMS_FILE),
       JSON.stringify(data, null, 2))
   }
@@ -86,13 +83,15 @@ class Plugin {
 
       this.expanded = await this.jsonld.expand(data)
 
-      this.dir = await this.mkdtemp(join(tmpdir(), PLUGIN.NAME))
-      await this.mkdir(join(this.dir, PLUGIN.IMAGES_DIR))
+      this.dir = await fsPromises.mkdtemp(join(tmpdir(), PLUGIN.NAME))
+      await fsPromises.mkdir(join(this.dir, PLUGIN.IMAGES_DIR))
 
       await this.Promise.all([
         this.Promise.map(
           this.getPhotoPaths(),
-          ({ src, dst }) => copyFile(src, dst),
+          ({ src, dst }) => fs.copyFile(src, dst, (err) => {
+            if (err) throw err
+          }),
           { concurrency: this.config.concurrency || PLUGIN.COPY_PROCESSES }
         ),
         this.writeJson()
@@ -101,7 +100,7 @@ class Plugin {
       const result = await zip.zipSync(this.dir, output)
       logger.info(`${PLUGIN.NAME} wrote ${result.bytes} bytes to ${output}`)
 
-      await this.rm(this.dir)
+      await fsPromises.remove(this.dir)
     } catch (e) {
       logger.error(e.message)
     }
