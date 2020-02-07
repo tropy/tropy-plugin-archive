@@ -89,7 +89,7 @@ class Plugin {
       await this.Promise.all([
         this.Promise.map(
           this.getPhotoPaths(),
-          ({ src, dst }) => fs.copyFile(src, dst, (err) => {
+          ({ src, dst }) => fsPromises.copyFile(src, dst, (err) => {
             if (err) throw err
           }),
           { concurrency: this.config.concurrency || PLUGIN.COPY_PROCESSES }
@@ -100,7 +100,7 @@ class Plugin {
       const result = await zip.zipSync(this.dir, output)
       logger.info(`${PLUGIN.NAME} wrote ${result.bytes} bytes to ${output}`)
 
-      await fsPromises.remove(this.dir)
+      await fsPromises.rmdir(this.dir, true)
     } catch (e) {
       logger.error(e.message)
     }
