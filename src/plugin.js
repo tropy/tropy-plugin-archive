@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const { promisify } = require('util')
 const fsPromises = fs.promises
 const { join, extname } = require('path')
 const { tmpdir } = require('os')
@@ -17,6 +18,8 @@ class Plugin {
 
     const { require } = this.context
     const { Promise } = require('bluebird')
+
+    this.zip = promisify(zip.zip)
     this.Promise = Promise
     this.jsonld = require('jsonld')
     this.dialog = () => require('../dialog').save({
@@ -95,10 +98,8 @@ class Plugin {
         this.writeJson()
       ])
 
-      await zip.zip(this.dir, output,
-        () => fsPromises.rmdir(this.dir, { recursive: true })
-      )
-
+      await this.zip(this.dir, output)
+      await fsPromises.rmdir(this.dir, { recursive: true })
     } catch (e) {
       logger.error(e.message)
     }
