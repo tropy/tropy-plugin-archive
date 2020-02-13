@@ -7,7 +7,7 @@ const { join, extname } = require('path')
 const { tmpdir } = require('os')
 const zip = require('cross-zip')
 const { hash } = require('./utils')
-const { TROPY, PLUGIN } = require('./constants')
+const { PLUGIN } = require('./constants')
 
 
 class Plugin {
@@ -21,7 +21,6 @@ class Plugin {
 
     this.zip = promisify(zip.zip)
     this.Promise = Promise
-    this.jsonld = require('jsonld')
     this.dialog = () => require('../dialog').save({
       filters: [{
         name: PLUGIN.ARCHIVES,
@@ -52,7 +51,7 @@ class Plugin {
   }
 
   source(photo) {
-    return photo[TROPY.PATH][0]['@value']
+    return photo.path
   }
 
   destination(src, dir = this.dir) {
@@ -60,7 +59,7 @@ class Plugin {
   }
 
   *getPhotoPath(item) {
-    const photos = item[TROPY.PHOTO] ? item[TROPY.PHOTO][0]['@list'] : []
+    const photos = item.photo || []
     for (let photo of photos) {
       const src = this.source(photo)
       const dst = this.destination(src)
@@ -69,10 +68,8 @@ class Plugin {
   }
 
   *getPhotoPaths() {
-    for (let items of this.expanded) {
-      for (let item of items['@graph']) {
-        yield* this.getPhotoPath(item)
-      }
+    for (let item of this.data[0]['@graph']) {
+      yield* this.getPhotoPath(item)
     }
   }
 
@@ -83,9 +80,6 @@ class Plugin {
 
     try {
       this.data = data
-
-      this.expanded = await this.jsonld.expand(data)
-
       this.dir = await fsPromises.mkdtemp(join(tmpdir(), PLUGIN.NAME))
       await fsPromises.mkdir(join(this.dir, PLUGIN.IMAGES_DIR))
 
@@ -94,10 +88,10 @@ class Plugin {
           this.getPhotoPaths(),
           ({ src, dst }) => fsPromises.copyFile(src, dst),
           { concurrency: this.config.concurrency || PLUGIN.COPY_PROCESSES }
-        ),
-        this.writeJson()
+        )
       ])
 
+      await this.writeJson()
       await this.zip(this.dir, output)
       await fsPromises.rmdir(this.dir, { recursive: true })
     } catch (e) {
