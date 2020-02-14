@@ -5,7 +5,7 @@ const { promisify } = require('util')
 const fsPromises = fs.promises
 const { join, extname } = require('path')
 const { tmpdir } = require('os')
-const zip = require('cross-zip')
+const zip = promisify(require('cross-zip').zip)
 const { hash } = require('./utils')
 const { PLUGIN } = require('./constants')
 
@@ -19,7 +19,6 @@ class Plugin {
     const { require } = this.context
     const { Promise } = require('bluebird')
 
-    this.zip = promisify(zip.zip)
     this.Promise = Promise
     this.dialog = () => require('../dialog').save({
       filters: [{
@@ -92,7 +91,7 @@ class Plugin {
       ])
 
       await this.writeJson()
-      await this.zip(this.dir, output)
+      await zip(this.dir, output)
       await fsPromises.rmdir(this.dir, { recursive: true })
     } catch (e) {
       logger.error(e.message)
