@@ -1,11 +1,13 @@
 'use strict'
 
 const fs = require('fs')
+const { promisify } = require('util')
+const fsPromises = fs.promises
 const { join, extname } = require('path')
 const { tmpdir } = require('os')
-const zip = require('cross-zip')
-const { copyFile, hash } = require('./utils')
-const { TROPY, PLUGIN } = require('./constants')
+const zip = promisify(require('cross-zip').zip)
+const { hash } = require('./utils')
+const { PLUGIN } = require('./constants')
 
 
 class Plugin {
@@ -15,13 +17,9 @@ class Plugin {
     this.logger = context.logger
 
     const { require } = this.context
-    const { Promise, promisify } = require('bluebird')
+    const { Promise } = require('bluebird')
+
     this.Promise = Promise
-    this.mkdir = promisify(fs.mkdir)
-    this.rm = promisify(require('rimraf'))
-    this.mkdtemp = promisify(fs.mkdtemp)
-    this.writeFile = promisify(fs.writeFile)
-    this.jsonld = require('jsonld').promises
     this.dialog = () => require('../dialog').save({
       filters: [{
         name: PLUGIN.ARCHIVES,
@@ -46,13 +44,13 @@ class Plugin {
   async writeJson() {
     const data = this.substitutePaths(this.data)
 
-    return this.writeFile(
+    return fsPromises.writeFile(
       join(this.dir, PLUGIN.ITEMS_FILE),
       JSON.stringify(data, null, 2))
   }
 
   source(photo) {
-    return photo[TROPY.PATH][0]['@value']
+    return photo.path
   }
 
   destination(src, dir = this.dir) {
@@ -60,7 +58,7 @@ class Plugin {
   }
 
   *getPhotoPath(item) {
-    const photos = item[TROPY.PHOTO] ? item[TROPY.PHOTO][0]['@list'] : []
+    const photos = item.photo || []
     for (let photo of photos) {
       const src = this.source(photo)
       const dst = this.destination(src)
@@ -69,10 +67,8 @@ class Plugin {
   }
 
   *getPhotoPaths() {
-    for (let items of this.expanded) {
-      for (let item of items['@graph']) {
-        yield* this.getPhotoPath(item)
-      }
+    for (let item of this.data[0]['@graph']) {
+      yield* this.getPhotoPath(item)
     }
   }
 
@@ -83,25 +79,20 @@ class Plugin {
 
     try {
       this.data = data
-
-      this.expanded = await this.jsonld.expand(data)
-
-      this.dir = await this.mkdtemp(join(tmpdir(), PLUGIN.NAME))
-      await this.mkdir(join(this.dir, PLUGIN.IMAGES_DIR))
+      this.dir = await fsPromises.mkdtemp(join(tmpdir(), PLUGIN.NAME))
+      await fsPromises.mkdir(join(this.dir, PLUGIN.IMAGES_DIR))
 
       await this.Promise.all([
         this.Promise.map(
           this.getPhotoPaths(),
-          ({ src, dst }) => copyFile(src, dst),
+          ({ src, dst }) => fsPromises.copyFile(src, dst),
           { concurrency: this.config.concurrency || PLUGIN.COPY_PROCESSES }
-        ),
-        this.writeJson()
+        )
       ])
 
-      const result = await zip.zipSync(this.dir, output)
-      logger.info(`${PLUGIN.NAME} wrote ${result.bytes} bytes to ${output}`)
-
-      await this.rm(this.dir)
+      await this.writeJson()
+      await zip(this.dir, output)
+      await fsPromises.rmdir(this.dir, { recursive: true })
     } catch (e) {
       logger.error(e.message)
     }
