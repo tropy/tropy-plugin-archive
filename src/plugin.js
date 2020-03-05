@@ -29,7 +29,6 @@ class Plugin {
   }
 
   substitutePaths(jsonld) {
-    jsonld = Object.assign({}, jsonld)
     for (let item of jsonld['@graph']) {
       if (!item.photo) continue
       for (let photo of item.photo) {
