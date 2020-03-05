@@ -29,13 +29,11 @@ class Plugin {
   }
 
   substitutePaths(jsonld) {
-    jsonld = jsonld.slice()
-    for (let items of jsonld) {
-      for (let item of items['@graph']) {
-        if (!item.photo) continue
-        for (let photo of item.photo) {
-          photo.path = this.destination(photo.path, '.')
-        }
+    jsonld = Object.assign({}, jsonld)
+    for (let item of jsonld['@graph']) {
+      if (!item.photo) continue
+      for (let photo of item.photo) {
+        photo.path = this.destination(photo.path, '.')
       }
     }
     return jsonld
@@ -67,7 +65,7 @@ class Plugin {
   }
 
   *getPhotoPaths() {
-    for (let item of this.data[0]['@graph']) {
+    for (let item of this.data['@graph']) {
       yield* this.getPhotoPath(item)
     }
   }
