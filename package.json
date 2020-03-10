@@ -19,8 +19,8 @@
     {
       "field": "output",
       "label": "Output",
-      "hint": "Location of output archive zip file",
-      "default": "/path/to/archive.zip",
+      "hint": "Optional. Location of output archive zip file",
+      "default": "",
       "type": "save-file"
     }
   ],
