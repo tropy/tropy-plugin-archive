@@ -12,16 +12,28 @@
     "lint": "eslint src",
     "test": "electron-mocha --renderer"
   },
-  "repository": "https://github.com/tropy/tropy-archive",
+  "repository": "https://github.com/tropy/tropy-plugin-archive",
   "author": "Tropy",
   "license": "AGPL-3.0",
   "options": [
     {
-      "field": "output",
-      "label": "Output",
-      "hint": "Optional. Location of output archive zip file",
-      "default": "",
+      "field": "root",
+      "label": "Root",
+      "hint": "Zip root folder name",
+      "default": "tropy",
+      "required": true
+    },
+    {
+      "field": "zipFile",
+      "label": "Save as",
+      "hint": "Default zip file location",
       "type": "save-file"
+    },
+    {
+      "field": "prompt",
+      "label": "Always ask?",
+      "hint": "Always ask where to save the output file.",
+      "type": "boolean"
     }
   ],
   "dependencies": {
