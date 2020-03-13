@@ -17,7 +17,6 @@ module.exports = {
     'fs',
     'os',
     'path',
-    'rimraf',
     'util'
   ],
   plugins: [
