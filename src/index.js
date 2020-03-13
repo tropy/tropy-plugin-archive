@@ -43,47 +43,46 @@ class ArchivePlugin {
   }
 
   async export(data) {
-    try {
-      let { zipFile, filters, concurrency, images } = this.options
+    let { zipFile, filters, concurrency, images } = this.options
 
-      if (!zipFile || this.options.prompt) {
-        zipFile = await this.dialog({ defaultPath: zipFile, filters })
-      }
-
-      if (!zipFile) return
-
-      // Ensure zip file looks like a zip file!
-      if (extname(zipFile) !== '.zip') {
-        throw new Error(`not a zip file: ${zipFile}`)
-      }
-
-      let tmp = await mkdtemp(join(tmpdir(), 'tropy-archive-'))
-      let root = join(tmp, this.options.root)
-
-      // Sanity check that root is still in tmp!
-      if (relative(root, tmp) !== '..') {
-        throw new Error(`root "${root}" outside of tmp folder!`)
-      }
-
-      await mkdir(join(root, images), { recursive: true })
-
-      await this.Bluebird.map(
-        this.processPhotoPaths(data, root, images),
-        ({ src, dst }) => copyFile(src, dst),
-        { concurrency })
-
-      await writeFile(
-        join(root, this.options.json),
-        JSON.stringify(data, null, 2))
-
-      await unlink(join(zipFile)).catch()
-
-      await zip(root, zipFile)
-      await rmdir(tmp, { recursive: true })
-
-    } catch (e) {
-      this.logger.error({ stack: e.stack }, 'archive export failed')
+    if (!zipFile || this.options.prompt) {
+      zipFile = await this.dialog({ defaultPath: zipFile, filters })
     }
+
+    if (!zipFile) return
+
+    // Ensure zip file looks like a zip file!
+    if (extname(zipFile) !== '.zip') {
+      throw new Error(`not a zip file: ${zipFile}`)
+    }
+
+    let tmp = await mkdtemp(join(tmpdir(), 'tropy-archive-'))
+    let root = join(tmp, this.options.root)
+
+    // Sanity check that root is still in tmp!
+    if (relative(root, tmp) !== '..') {
+      throw new Error(`root "${root}" outside of tmp folder!`)
+    }
+
+    await mkdir(join(root, images), { recursive: true })
+
+    await this.Bluebird.map(
+      this.processPhotoPaths(data, root, images),
+      ({ src, dst }) => copyFile(src, dst),
+      { concurrency })
+
+    await writeFile(
+      join(root, this.options.json),
+      JSON.stringify(data, null, 2))
+
+    try {
+      await unlink(zipFile)
+    } catch (e) {
+      // ignore
+    }
+
+    await zip(root, zipFile)
+    await rmdir(tmp, { recursive: true })
   }
 }
 
