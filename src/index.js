@@ -1,6 +1,6 @@
 'use strict'
 
-const { join, extname, relative } = require('path')
+const { join, extname, relative, basename } = require('path')
 const { tmpdir } = require('os')
 const { promisify } = require('util')
 const zip = promisify(require('cross-zip').zip)
@@ -23,6 +23,8 @@ class ArchivePlugin {
   }
 
   *processPhotoPaths(data, root, images) {
+    let files = {}
+    let checksums = []
     for (let item of data['@graph']) {
       if (!item.photo) continue
 
@@ -30,7 +32,22 @@ class ArchivePlugin {
         if (photo.protocol !== 'file') continue
 
         let src = photo.path
-        let dst = `${photo.checksum}${extname(src)}`
+        let ext = extname(src)
+        let name = basename(photo.path, ext)
+        let dst
+
+        if (name in files) {
+          if (checksums.includes(photo.checksum)) {
+            continue
+          } else {
+            files[name] = files[name] + 1
+            dst = `${name}${files[name]}${ext}`
+          }
+        } else {
+          files[name] = 0
+          checksums.push(photo.checksum)
+          dst = `${name}${ext}`
+        }
 
         photo.path = join(images, dst)
 
