@@ -1,6 +1,6 @@
 {
   "name": "tropy-archive",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Export metadata and photos into a zip archive.",
   "main": "bundle.js",
   "hooks": {
