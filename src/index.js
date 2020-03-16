@@ -24,7 +24,7 @@ class ArchivePlugin {
 
   *processPhotoPaths(data, root, images) {
     let files = {}
-    let checksums = []
+
     for (let item of data['@graph']) {
       if (!item.photo) continue
 
@@ -33,22 +33,13 @@ class ArchivePlugin {
 
         let src = photo.path
         let ext = extname(src)
-        let name = basename(photo.path, ext)
-        let dst
+        let dst = basename(src)
 
-        if (name in files) {
-          if (checksums.includes(photo.checksum)) {
-            continue
-          } else {
-            files[name] = files[name] + 1
-            dst = `${name}${files[name]}${ext}`
-          }
-        } else {
-          files[name] = 0
-          checksums.push(photo.checksum)
-          dst = `${name}${ext}`
+        if (dst in files && photo.checksum !== files[dst]) {
+          dst = `${photo.checksum}${ext}`
         }
 
+        files[dst] = photo.checksum
         photo.path = join(images, dst)
 
         yield {
