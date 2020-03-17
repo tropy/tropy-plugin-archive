@@ -18,9 +18,16 @@
   "options": [
     {
       "field": "root",
-      "label": "Root",
+      "label": "Root folder",
       "hint": "Zip root folder name",
       "default": "tropy",
+      "required": true
+    },
+    {
+      "field": "images",
+      "label": "Image folder",
+      "hint": "Image folder name",
+      "default": ".",
       "required": true
     },
     {

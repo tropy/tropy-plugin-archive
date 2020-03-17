@@ -100,7 +100,7 @@ ArchivePlugin.defaults = {
     name: 'Zip Files',
     extensions: ['zip']
   }],
-  images: 'images',
+  images: '.',
   json: 'items.json',
   prompt: false,
   root: 'tropy'
