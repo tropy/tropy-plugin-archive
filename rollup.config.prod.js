@@ -1,9 +1,10 @@
 'use strict'
 
 const dev = require('./rollup.config.dev')
-const uglify = require('rollup-plugin-uglify')
+const { terser } = require('rollup-plugin-terser')
 
 
-module.exports = Object.assign({}, dev, {
-  plugins: dev.plugins.concat(uglify())
-})
+module.exports = {
+  ...dev,
+  plugins: [...dev.plugins, terser()]
+}

@@ -4,6 +4,7 @@ const { join, extname, relative, basename } = require('path')
 const { tmpdir } = require('os')
 const { promisify } = require('util')
 const zip = promisify(require('cross-zip').zip)
+const pMap = require('p-map')
 
 const {
   copyFile, mkdir, mkdtemp, rmdir, writeFile, unlink
@@ -18,8 +19,7 @@ class ArchivePlugin {
     }
 
     this.logger = context.logger
-    this.dialog = context.require('../dialog').save
-    this.Bluebird = context.require('bluebird')
+    this.dialog = context.dialog.save
   }
 
   *processPhotoPaths(data, root, images) {
@@ -74,7 +74,7 @@ class ArchivePlugin {
 
     await mkdir(join(root, images), { recursive: true })
 
-    await this.Bluebird.map(
+    await pMap(
       this.processPhotoPaths(data, root, images),
       ({ src, dst }) => copyFile(src, dst),
       { concurrency })

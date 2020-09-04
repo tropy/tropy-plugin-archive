@@ -1,8 +1,7 @@
 'use strict'
 
-const common = require('rollup-plugin-commonjs')
-const replace = require('rollup-plugin-replace')
-const resolve = require('rollup-plugin-node-resolve')
+const common = require('@rollup/plugin-commonjs')
+const resolve = require('@rollup/plugin-node-resolve').default
 
 module.exports = {
   input: './src/index.js',
@@ -20,12 +19,6 @@ module.exports = {
     'util'
   ],
   plugins: [
-    // circumvent circular dependency by removing globSync
-    replace({
-      ['./sync.js']: '{}',
-      delimiters: ['require(\'', '\')'],
-      include: 'node_modules/glob/glob.js'
-    }),
     resolve(),
     common()
   ]
