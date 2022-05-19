@@ -1,5 +1,6 @@
 {
   "name": "tropy-archive",
+  "productName": "Archive",
   "version": "3.0.0",
   "description": "Export metadata and photos into a zip archive.",
   "main": "plugin.js",
@@ -8,7 +9,7 @@
   },
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "watch": "rollup -w -c rollup.config.dev.js",
+    "watch": "rollup -w -c rollup.config.js",
     "lint": "eslint src test",
     "test": "electron-mocha --renderer"
   },
