@@ -1,3 +1,5 @@
 output.zip
 node_modules
 package-lock.json
+index.js
+third-party-licenses.txt
