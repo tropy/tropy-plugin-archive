@@ -7,7 +7,7 @@ const zip = promisify(require('cross-zip').zip)
 const pMap = require('p-map')
 
 const {
-  copyFile, mkdir, mkdtemp, rmdir, writeFile, unlink
+  copyFile, mkdir, mkdtemp, rm, writeFile, unlink
 } = require('fs').promises
 
 
@@ -24,7 +24,6 @@ class ArchivePlugin {
 
   *processPhotoPaths(data, root, images) {
     let files = {}
-
     for (let item of data['@graph']) {
       if (!item.photo) continue
 
@@ -90,7 +89,7 @@ class ArchivePlugin {
     }
 
     await zip(root, zipFile)
-    await rmdir(tmp, { recursive: true })
+    await rm(tmp, { recursive: true })
   }
 }
 
