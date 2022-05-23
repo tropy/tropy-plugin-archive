@@ -3,6 +3,7 @@
   "productName": "Archive",
   "version": "3.0.0",
   "description": "Export metadata and photos into a zip archive.",
+  "icon": "icon.svg",
   "main": "plugin.js",
   "hooks": {
     "export": true
