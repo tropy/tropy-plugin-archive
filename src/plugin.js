@@ -5,11 +5,8 @@ const { tmpdir } = require('os')
 const { promisify } = require('util')
 const zip = promisify(require('cross-zip').zip)
 const pMap = require('p-map')
-
-const {
-  copyFile, mkdir, mkdtemp, rm, writeFile, unlink
-} = require('fs').promises
-
+const { copyFile, mkdir, mkdtemp, rm, writeFile, unlink } =
+  require('fs').promises
 
 class ArchivePlugin {
   constructor(options, context) {
@@ -39,13 +36,13 @@ class ArchivePlugin {
         }
 
         if (!(dst in files)) {
-        files[dst] = photo.checksum
-        photo.path = join(images, dst)
-        yield {
-          src,
-          dst: join(root, images, dst)
+          files[dst] = photo.checksum
+          photo.path = join(images, dst)
+          yield {
+            src,
+            dst: join(root, images, dst)
+          }
         }
-      }
         photo.path = join(images, dst)
       }
     }
@@ -66,41 +63,47 @@ class ArchivePlugin {
     }
 
     let tmp = await mkdtemp(join(tmpdir(), 'tropy-archive-'))
-    let root = join(tmp, this.options.root)
-
-    // Sanity check that root is still in tmp!
-    if (relative(root, tmp) !== '..') {
-      throw new Error(`root "${root}" outside of tmp folder!`)
-    }
-
-    await mkdir(join(root, images), { recursive: true })
-
-    await pMap(
-      this.processPhotoPaths(data, root, images),
-      ({ src, dst }) => copyFile(src, dst),
-      { concurrency })
-
-    await writeFile(
-      join(root, this.options.json),
-      JSON.stringify(data, null, 2))
-
     try {
-      await unlink(zipFile)
-    } catch (e) {
-      // ignore
-    }
+      let root = join(tmp, this.options.root)
 
-    await zip(root, zipFile)
-    await rm(tmp, { recursive: true })
+      // Sanity check that root is still in tmp!
+      if (relative(root, tmp) !== '..') {
+        throw new Error(`root "${root}" outside of tmp folder!`)
+      }
+
+      await mkdir(join(root, images), { recursive: true })
+
+      await pMap(
+        this.processPhotoPaths(data, root, images),
+        ({ src, dst }) => copyFile(src, dst),
+        { concurrency }
+      )
+
+      await writeFile(
+        join(root, this.options.json),
+        JSON.stringify(data, null, 2)
+      )
+      try {
+        await unlink(zipFile)
+      } catch (e) {
+        // ignore
+      }
+
+      await zip(root, zipFile)
+    } finally {
+      await rm(tmp, { recursive: true })
+    }
   }
 }
 
 ArchivePlugin.defaults = {
   concurrency: 64,
-  filters: [{
-    name: 'Zip Files',
-    extensions: ['zip']
-  }],
+  filters: [
+    {
+      name: 'Zip Files',
+      extensions: ['zip']
+    }
+  ],
   images: '.',
   json: 'items.json',
   prompt: false,
