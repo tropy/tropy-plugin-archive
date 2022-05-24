@@ -38,13 +38,15 @@ class ArchivePlugin {
           dst = `${photo.checksum}${ext}`
         }
 
+        if (!(dst in files)) {
         files[dst] = photo.checksum
         photo.path = join(images, dst)
-
         yield {
           src,
           dst: join(root, images, dst)
         }
+      }
+        photo.path = join(images, dst)
       }
     }
   }
