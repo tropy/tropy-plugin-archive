@@ -37,7 +37,6 @@ class ArchivePlugin {
 
         if (!(dst in files)) {
           files[dst] = photo.checksum
-          photo.path = join(images, dst)
           yield {
             src,
             dst: join(root, images, dst)
