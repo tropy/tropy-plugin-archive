@@ -1,4 +1,6 @@
-# Tropy Archive Plugin
+<p align="center"><img src="icon.svg"></p>
+
+<h1 align="center">Tropy Archive Plugin</h1>
 
 Tropy plugin for exporting items into a single zip archive.
 This includes all the metadata, as well as the photo files.
