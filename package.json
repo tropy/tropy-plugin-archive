@@ -55,6 +55,7 @@
     "p-map": "^4.0.0",
     "rollup": "^2.73.0",
     "rollup-plugin-license": "^2.7.0",
-    "rollup-plugin-terser": "^7.0.2"
+    "rollup-plugin-terser": "^7.0.2",
+    "sinon": "^14.0.0"
   }
 }
