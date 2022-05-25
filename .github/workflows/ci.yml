@@ -20,11 +20,11 @@ jobs:
           node-version: 16
 
       - name: Install dependencies
-        run: npm install --no-progress --no-package-lock
+        run: npm ci
 
       - name: Lint
         run: npm run lint
-        
+
       - name: Test
         run: xvfb-run npm run test
 
