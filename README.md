@@ -7,7 +7,7 @@ This includes all the metadata, as well as the photo files.
 
 ## Installation
 
-- Download the `.zip` file from the [latest release](https://github.com/tropy/tropy-plugin-archive/releases.latest) on GitHub.
+- Download the `.zip` file from the [latest release](https://github.com/tropy/tropy-plugin-archive/releases/latest) on GitHub.
 - In Tropy, navigate to _Preferences… > Plugins_
   and click _Install Plugin_ to select the downloaded ZIP file.
 
