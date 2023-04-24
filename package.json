@@ -50,7 +50,7 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "chai": "^4.3.6",
     "cross-zip": "^4.0.0",
-    "electron": "^18.0.0",
+    "electron": "^24.1.2",
     "electron-mocha": "^11.0.2",
     "eslint": "^8.15.0",
     "p-map": "^4.0.0",
