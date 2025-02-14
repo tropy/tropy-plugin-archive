@@ -12,7 +12,7 @@
     "build": "rollup -c rollup.config.js",
     "watch": "rollup -w -c rollup.config.js",
     "lint": "eslint src test",
-    "test": "electron-mocha --renderer"
+    "test": "electron-mocha --no-sandbox --renderer"
   },
   "repository": "https://github.com/tropy/tropy-plugin-archive",
   "author": "Tropy",
